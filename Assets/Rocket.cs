@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Rocket : MonoBehaviour {
+
+    float rcsThrust = 100f;
+
     Rigidbody rigidBody;
     AudioSource audioSource;
        
@@ -16,16 +19,17 @@ public class Rocket : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         //check are there any keys down?
-        ProcessInput();
+        Rotate();
+        Thrust();
     }
 
-    private void ProcessInput()
+    private void Thrust()
     {
         //ask q. about key that we have pressed
         if (Input.GetKey(KeyCode.Space))
         {
             rigidBody.AddRelativeForce(Vector3.up); //position in unity is vector 3
-            if(!audioSource.isPlaying)
+            if (!audioSource.isPlaying)
             {
                 audioSource.Play(); // so it doesnt layer on top of each other.
             }
@@ -34,15 +38,25 @@ public class Rocket : MonoBehaviour {
         {
             audioSource.Stop();
         }
+    }
+
+    private void Rotate()
+    {
+        rigidBody.freezeRotation = true; //take manual control of rotation
+
+        float rotationThisFrame = rcsThrust * Time.deltaTime; //deltaTime = frame time
 
         if (Input.GetKey(KeyCode.A))
         {
-            transform.Rotate(Vector3.forward);
+            transform.Rotate(Vector3.forward * rotationThisFrame);
         }
         else if(Input.GetKey(KeyCode.D))
         {
-            transform.Rotate(-Vector3.forward);
+            transform.Rotate(-Vector3.forward * rotationThisFrame);
         }
+
+        rigidBody.freezeRotation = false; //resume physics control of rotation.
+        
     }
 }
 
